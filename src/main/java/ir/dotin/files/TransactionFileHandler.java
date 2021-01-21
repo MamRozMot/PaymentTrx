@@ -1,6 +1,6 @@
 package ir.dotin.files;
 
-import ir.dotin.Main;
+import ir.dotin.PaymentTransactionApp;
 import ir.dotin.business.TransactionProcessor;
 
 import java.io.FileOutputStream;
@@ -9,8 +9,6 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 public class TransactionFileHandler {
-    private static final String TRANSACTION_FILE_PATH = Main.FILE_PATH_PREFIX + "Transactions.txt";
-
     //createTransactionFile
     public static void createTransactionFile(List<TransactionVO> list) throws IOException, ClassNotFoundException {
         TransactionVO transactionVO = new TransactionVO();
@@ -18,7 +16,7 @@ public class TransactionFileHandler {
         // String debtorDepositNumber = "";
         String resultText = "";
         //write serialize
-        FileOutputStream Tout = new FileOutputStream(TRANSACTION_FILE_PATH);
+        FileOutputStream Tout = new FileOutputStream(PaymentTransactionApp.TRANSACTION_FILE_PATH);
         ObjectOutputStream transactionOut = new ObjectOutputStream(Tout);
 //-----------------------------------------------------------
         //  BufferedWriter writer = new BufferedWriter(new FileWriter(TRANSACTION_FILE_PATH));
