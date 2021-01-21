@@ -8,16 +8,10 @@ public class BalanceVO implements Serializable {
     String depositNumber;
     BigDecimal amount;
 
-    public BalanceVO(String depositNumber, BigDecimal generateRandomAmount) {
-
-    }
-
     public BalanceVO() {
-
     }
 
-    public void BalanceRecords(String depositNumber, BigDecimal amount) {
-
+    public BalanceVO(String depositNumber, BigDecimal amount) {
         this.depositNumber = depositNumber;
         this.amount = amount;
     }

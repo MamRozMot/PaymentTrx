@@ -1,35 +1,29 @@
 
 package ir.dotin.files;
 
-import ir.dotin.business.TransactionProcessor;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class TransactionVO extends TransactionProcessor implements Serializable {
+public class TransactionVO implements Serializable {
+    private String debtorDepositNumber;
+    private String creditorDepositNumber;
+    private BigDecimal amount;
 
-    private  BigDecimal amount;
-   public static String debtorDepositNumber;
-    public static String creditorDepositNumber;
-
-    public static String getDebtorDepositNumber() {
+    public String getDebtorDepositNumber() {
         return debtorDepositNumber;
     }
 
-    public TransactionVO setDebtorDepositNumber(String debtorDepositNumber) {
-        this.debtorDepositNumber=debtorDepositNumber;
-        return this;
+    public void setDebtorDepositNumber(String debtorDepositNumber) {
+        this.debtorDepositNumber = debtorDepositNumber;
     }
 
-    public static String getCreditorDepositNumber() {
+    public String getCreditorDepositNumber() {
         return creditorDepositNumber;
     }
 
-    public TransactionVO setCreditorDepositNumber(String creditorDepositNumber) {
-        this.creditorDepositNumber=creditorDepositNumber;
-        return this;
+    public void setCreditorDepositNumber(String creditorDepositNumber) {
+        this.creditorDepositNumber = creditorDepositNumber;
     }
-
 
     public BigDecimal getAmount() {
         return amount;

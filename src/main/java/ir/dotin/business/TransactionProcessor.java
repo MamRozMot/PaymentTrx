@@ -6,121 +6,77 @@ import ir.dotin.files.PaymentVO;
 import ir.dotin.files.TransactionVO;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionProcessor {
-    static TransactionProcessor trx=new TransactionProcessor();
-    static PaymentVO pay = new PaymentVO();
 
-    //Variable Deposit
-    private static BigDecimal initialBalance; // موجودی اولیه
-    private static depositType depositType;
-    private String depositNumber;
+    public static List<TransactionVO> processPaymentRecords(List<BalanceVO> depositBalances, List<PaymentVO> paymentVOs) throws Exception {
+        String debtorDepositNumber = getDebtorDepositNumber(paymentVOs);
+        validateDebtorBalance(depositBalances, paymentVOs, debtorDepositNumber);
 
-    public BigDecimal getInitialBalance() {
-        return initialBalance;
-    }
-
-    public BigDecimal setInitalBalance(BigDecimal initalBalance) {
-        this.initialBalance = initalBalance;
-        return initalBalance;
-    }
-
-    public depositType getDepositType() {
-        return depositType;
-    }
-
-    public void setDepositType(depositType depositType) {
-        this.depositType = depositType;
-
-    }
-
-
-    public String getDepositNumber() {
-        return depositNumber;
-    }
-
-    public void setDepositNumber(String depositNumber) {
-        this.depositNumber = depositNumber;
-
-    }
-
-    //------------------------------------------------------
-
-    //Deposit{
-    public static boolean doWithdrawTransaction() {
-       // PaymentVO pay = new PaymentVO();
-      //  TransactionProcessor trx=new TransactionProcessor();
-        BigDecimal withdrawAmount = trx.getInitialBalance().subtract(pay.getAmount());
-        trx.setInitalBalance(withdrawAmount);
-        //return withdrawAmount;
-       return true;
-    }
-//======================================
-
-    //Deposit
-    // public List<TransactionVO> doDepositTransaction(TransactionVO transactionVO) {
-    public static boolean doDepositTransaction() {
-       // PaymentVO pay = new PaymentVO();
-       // TransactionProcessor trx=new TransactionProcessor();
-        BigDecimal depositAmount = trx.getInitialBalance().add(pay.getAmount());
-       trx.setInitalBalance(depositAmount);
-   //    return trx.setInitalBalance(depositAmount);
-
-         return true;
-
-    }
-
-    //---------------------------------------------
-    public static boolean validateWithdraw(List<BalanceVO> balanceVO) {
-
-
-        // return getAmount() <= deposit.getInitialBalance();
-        //PaymentVO pay = new PaymentVO();
-
-        if(trx.getInitialBalance().compareTo(pay.getAmount()) == 0 ||trx.getInitialBalance().compareTo(pay.getAmount()) == 1)
-            return true;
-        else
-            return false;
-    }
-
-    //----------------------------------------------
-    public static List<TransactionVO> processPaymentRecord(List<BalanceVO> depositBalances, List<PaymentVO> paymentVOS)
-            throws InadequateInitialBalanceException {
-        //  List<TransactionProcessor> depositList = TransactionProcessor.getDeposits();
-
-       // BigDecimal debtorBalance = BigDecimal.valueOf(0);
-        String debtorBalance = "";
-        String creditorBalance = "";
-        //   for (TransactionProcessor deposit : depositList) {
-        for (PaymentVO paymentVO : paymentVOS) {
-            if (!validateWithdraw(depositBalances)) {
-                throw new InadequateInitialBalanceException("Not enough balance!");
-            } else
-                // if (depositType.DEBTOR.equals(deposit.getDepositType())) {
-                if (depositType.DEBTOR.equals(paymentVO.getType())) {
-                    // debtorBalance = deposit.getInitialBalance();
-                    //debtorBalance = paymentVO.getAmount();
-                    debtorBalance = String.valueOf(doWithdrawTransaction());
-                } else {
-                    //  creditorBalance += deposit.getInitialBalance();
-                    //  creditorBalance += paymentVO.getAmount();
-                    creditorBalance = String.valueOf(doDepositTransaction());
-                }
-           /* if (debtorBalance > 0 && debtorBalance < creditorBalance) {
-                throw new InadequateInitialBalanceException("Not enough balance!");*/
+        List<TransactionVO> transactionVOs = new ArrayList<>();
+        for (PaymentVO paymentVO : paymentVOs) {
+            if (DepositType.CREDITOR.equals(paymentVO.getType())) {
+                transactionVOs.add(processPayment(depositBalances, debtorDepositNumber, paymentVO));
+            }
         }
+        return transactionVOs;
+    }
 
-        //      List<TransactionVO> transactionVOS = deposit.doWithdrawTransaction(TransactionVO deposit);
-        //     return transactionVOS;
+    private static String getDebtorDepositNumber(List<PaymentVO> paymentVOs) throws Exception {
+        for (PaymentVO paymentVO : paymentVOs) {
+            if (DepositType.DEBTOR.equals(paymentVO.getType())) {
+                return paymentVO.getDepositNumber();
+            }
+        }
+        throw new Exception("Debtor deposit not found!");
+    }
 
+    private static void validateDebtorBalance(List<BalanceVO> depositBalances, List<PaymentVO> paymentVOs, String debtorDepositNumber) throws Exception {
+        BigDecimal totalCreditorAmount = getCreditorAmountsSum(paymentVOs);
+        BigDecimal debtorBalance = getBalance(depositBalances, debtorDepositNumber);
+        if (debtorBalance == null)
+            throw new Exception("Debtor balance not found!");
+        if (totalCreditorAmount.compareTo(debtorBalance) > 0)
+            throw new InadequateInitialBalanceException("Not enough balance!");
+    }
+
+    private static BigDecimal getCreditorAmountsSum(List<PaymentVO> paymentVOs) {
+        BigDecimal totalCreditorAmount = new BigDecimal(0);
+        for (PaymentVO paymentVO : paymentVOs) {
+            if (DepositType.CREDITOR.equals(paymentVO.getType())) {
+                totalCreditorAmount.add(paymentVO.getAmount());
+            }
+        }
+        return totalCreditorAmount;
+    }
+
+    private static BigDecimal getBalance(List<BalanceVO> depositBalances, String depositNumber) {
+        for (BalanceVO balanceVO : depositBalances) {
+            if (balanceVO.getDepositNumber().equals(depositNumber))
+                return balanceVO.getAmount();
+        }
         return null;
+    }
+
+    private static TransactionVO processPayment(List<BalanceVO> depositBalances, String debtorDepositNumber, PaymentVO creditorPaymentVO) {
+        TransactionVO transactionVO = new TransactionVO();
+        transactionVO.setDebtorDepositNumber(debtorDepositNumber);
+        transactionVO.setCreditorDepositNumber(creditorPaymentVO.getDepositNumber());
+        transactionVO.setAmount(creditorPaymentVO.getAmount());
+        for (BalanceVO balanceVO : depositBalances) {
+            if (balanceVO.getDepositNumber().equals(creditorPaymentVO.getDepositNumber())) {//Creditor
+                balanceVO.setAmount(balanceVO.getAmount().add(creditorPaymentVO.getAmount()));
+            } else if (balanceVO.getDepositNumber().equals(debtorDepositNumber)) {//Debtor
+                balanceVO.setAmount(balanceVO.getAmount().subtract(creditorPaymentVO.getAmount()));
+            }
+        }
+        return transactionVO;
     }
 
 }
 
-
-//-----------------------
 
 
 

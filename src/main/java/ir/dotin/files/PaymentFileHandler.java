@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static ir.dotin.business.depositType.CREDITOR;
-import static ir.dotin.business.depositType.DEBTOR;
+import static ir.dotin.business.DepositType.CREDITOR;
+import static ir.dotin.business.DepositType.DEBTOR;
 
 public class PaymentFileHandler {
     // private static final String DEBTOR = "debtor";
