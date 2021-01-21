@@ -9,11 +9,13 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class TransactionProcessor {
+    static TransactionProcessor trx=new TransactionProcessor();
+    static PaymentVO pay = new PaymentVO();
 
     //Variable Deposit
     private static BigDecimal initialBalance; // موجودی اولیه
-    private String depositNumber;
     private static depositType depositType;
+    private String depositNumber;
 
     public BigDecimal getInitialBalance() {
         return initialBalance;
@@ -47,8 +49,8 @@ public class TransactionProcessor {
 
     //Deposit{
     public static boolean doWithdrawTransaction() {
-        PaymentVO pay = new PaymentVO();
-        TransactionProcessor trx=new TransactionProcessor();
+       // PaymentVO pay = new PaymentVO();
+      //  TransactionProcessor trx=new TransactionProcessor();
         BigDecimal withdrawAmount = trx.getInitialBalance().subtract(pay.getAmount());
         trx.setInitalBalance(withdrawAmount);
         //return withdrawAmount;
@@ -59,8 +61,8 @@ public class TransactionProcessor {
     //Deposit
     // public List<TransactionVO> doDepositTransaction(TransactionVO transactionVO) {
     public static boolean doDepositTransaction() {
-        PaymentVO pay = new PaymentVO();
-        TransactionProcessor trx=new TransactionProcessor();
+       // PaymentVO pay = new PaymentVO();
+       // TransactionProcessor trx=new TransactionProcessor();
         BigDecimal depositAmount = trx.getInitialBalance().add(pay.getAmount());
        trx.setInitalBalance(depositAmount);
    //    return trx.setInitalBalance(depositAmount);
@@ -69,22 +71,21 @@ public class TransactionProcessor {
 
     }
 
-
     //---------------------------------------------
     public static boolean validateWithdraw(List<BalanceVO> balanceVO) {
 
 
         // return getAmount() <= deposit.getInitialBalance();
-        PaymentVO pay = new PaymentVO();
+        //PaymentVO pay = new PaymentVO();
 
-        if (pay.getAmount().compareTo(pay.getAmount()) == 0 || pay.getAmount().compareTo(pay.getAmount()) == 1)
+        if(trx.getInitialBalance().compareTo(pay.getAmount()) == 0 ||trx.getInitialBalance().compareTo(pay.getAmount()) == 1)
             return true;
         else
             return false;
     }
 
     //----------------------------------------------
-    public static List<TransactionVO> prcessPaymentRecord(List<BalanceVO> depositBalances, List<PaymentVO> paymentVOS)
+    public static List<TransactionVO> processPaymentRecord(List<BalanceVO> depositBalances, List<PaymentVO> paymentVOS)
             throws InadequateInitialBalanceException {
         //  List<TransactionProcessor> depositList = TransactionProcessor.getDeposits();
 

@@ -13,7 +13,7 @@ public class Main {
         try {
             List<PaymentVO> paymentVOs = PaymentFileHandler.createPaymentFile("1.10.100.1", "1.20.100.", 1000);
             List<BalanceVO> depositBalances = BalanceFileHandler.createInitialBalanceFile(balanceVOs);
-            List<TransactionVO> transactionVOS = TransactionProcessor.prcessPaymentRecord(depositBalances, paymentVOs);
+            List<TransactionVO> transactionVOS = TransactionProcessor.processPaymentRecord(depositBalances, paymentVOs);
             TransactionFileHandler.createTransactionFile(transactionVOS);
             BalanceFileHandler.createFinalBalanceFile(depositBalances);
         } catch (Exception e) {
