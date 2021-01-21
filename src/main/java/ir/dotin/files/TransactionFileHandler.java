@@ -3,11 +3,10 @@ package ir.dotin.files;
 import ir.dotin.Main;
 import ir.dotin.business.TransactionProcessor;
 
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.List;
-
-import static ir.dotin.files.TransactionVO.creditorDepositNumber;
-import static ir.dotin.files.TransactionVO.debtorDepositNumber;
 
 public class TransactionFileHandler {
     private static final String TRANSACTION_FILE_PATH = Main.FILE_PATH_PREFIX + "Transactions.txt";
@@ -23,7 +22,7 @@ public class TransactionFileHandler {
         ObjectOutputStream transactionOut = new ObjectOutputStream(Tout);
 //-----------------------------------------------------------
         //  BufferedWriter writer = new BufferedWriter(new FileWriter(TRANSACTION_FILE_PATH));
-        for (TransactionProcessor deposit : list) {
+        /*for (TransactionProcessor deposit : list) {
             // if ("debtor".equals(deposit.getDepositType()))
             if (transaction.doWithdrawTransaction())
                 debtorDepositNumber = deposit.getDepositNumber();
@@ -44,7 +43,7 @@ public class TransactionFileHandler {
             in.close();
             transactionIn.close();
 
-        }
+        }*/
     }
 }
 
