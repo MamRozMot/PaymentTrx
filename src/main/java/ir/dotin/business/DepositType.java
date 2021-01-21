@@ -1,6 +1,6 @@
 package ir.dotin.business;
 
-public enum depositType {
+public enum DepositType {
     DEBTOR,
     CREDITOR;
 }

@@ -1,5 +1,7 @@
 package ir.dotin.files;
 
+import ir.dotin.PaymentTransactionApp;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,27 +9,21 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ir.dotin.files.PaymentFileHandler.generateRandomAmount;
-
 public class BalanceFileHandler {
-    private static final String BALANCE_FILE_PATH = "B://Balance.txt";
     public static List<BalanceVO> balanceVOs = new ArrayList<>();
-    static String debtorDepositNumber;
-    static String creditorDepositNumberPrefix;
 
 
     public static List<BalanceVO> createInitialBalanceFile(List<BalanceVO> balanceVOs) throws IOException, ClassNotFoundException {
-        BalanceVO balanceVO=new BalanceVO();
-        balanceVOs.add(new BalanceVO(debtorDepositNumber, generateRandomAmount()));
+        balanceVOs.add(new BalanceVO(PaymentTransactionApp.DEBTOR_DEPOSIT_NUMBER, PaymentTransactionApp.generateRandomAmount()));
         for (int i = 1; i <= 1000; i++) {
-            balanceVOs.add(new BalanceVO(creditorDepositNumberPrefix, generateRandomAmount()));
+            balanceVOs.add(new BalanceVO(PaymentTransactionApp.CREDITOR_DEPOSIT_NUMBER_PREFIX + i, PaymentTransactionApp.generateRandomAmount()));
         }
         writeBalanceRecordsToFile(balanceVOs);
         // read and output serialize
 //----------------------------------------------------------
-       FileInputStream balanceIn = new FileInputStream(BALANCE_FILE_PATH);
+       FileInputStream balanceIn = new FileInputStream(PaymentTransactionApp.BALANCE_FILE_PATH);
         ObjectInputStream in = new ObjectInputStream(balanceIn);
-        balanceVO = (BalanceVO) in.readObject();
+        BalanceVO balanceVO = (BalanceVO) in.readObject();
         System.out.println(balanceVO);
         in.close();
         balanceIn.close();
@@ -48,14 +44,14 @@ public class BalanceFileHandler {
     private static void writeBalanceRecordsToFile(List<BalanceVO> balanceVOs) throws IOException {
 //----------------------------
 //serialize
-        FileOutputStream Bout=new   FileOutputStream(BALANCE_FILE_PATH);
+        FileOutputStream Bout=new   FileOutputStream(PaymentTransactionApp.BALANCE_FILE_PATH);
         ObjectOutputStream   balanceOut=new  ObjectOutputStream(Bout);
 //----------------------------
         //  PrintWriter printWriter = new PrintWriter(PAYMENT_FILE_PATH);
         // FileWriter fileWriter = new FileWriter(PAYMENT_FILE_PATH, true);
         for (BalanceVO balanceVO : balanceVOs) {
             //  printWriter.println(paymentRecord.toString());
-            balanceOut.writeObject(balanceVO.toString());
+            balanceOut.writeObject(balanceVO);
         }
 
         //  printWriter.close();
@@ -75,10 +71,10 @@ public class BalanceFileHandler {
             throws IOException {
         String resultFinalBalance = "";
 
-        Path pathBalanceUpdate = Paths.get("B://BalanceUpdate.txt");
+        Path pathBalanceUpdate = Paths.get(PaymentTransactionApp.FILE_PATH_PREFIX + "BalanceUpdate.txt");
         Files.createFile(pathBalanceUpdate);
         writeBalanceRecordsToFile(balanceVOs);
-        resultFinalBalance += debtorDepositNumber + "\t" + creditorDepositNumberPrefix + "\t" + depositBalances + "\n";
+        resultFinalBalance += PaymentTransactionApp.DEBTOR_DEPOSIT_NUMBER + "\t" + PaymentTransactionApp.CREDITOR_DEPOSIT_NUMBER_PREFIX + "\t" + depositBalances + "\n";
 
         return resultFinalBalance;
     }
