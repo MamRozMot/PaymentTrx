@@ -9,6 +9,8 @@ import static ir.dotin.files.BalanceFileHandler.balanceVOs;
 
 
 public class Main {
+    public static final String FILE_PATH_PREFIX = "B://";
+
     public static void main(String[] args) {
         try {
             List<PaymentVO> paymentVOs = PaymentFileHandler.createPaymentFile("1.10.100.1", "1.20.100.", 1000);

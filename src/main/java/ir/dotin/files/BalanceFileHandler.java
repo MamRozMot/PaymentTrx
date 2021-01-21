@@ -1,5 +1,7 @@
 package ir.dotin.files;
 
+import ir.dotin.Main;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,7 +12,7 @@ import java.util.List;
 import static ir.dotin.files.PaymentFileHandler.generateRandomAmount;
 
 public class BalanceFileHandler {
-    private static final String BALANCE_FILE_PATH = "B://Balance.txt";
+    private static final String BALANCE_FILE_PATH = Main.FILE_PATH_PREFIX + "Balance.txt";
     public static List<BalanceVO> balanceVOs = new ArrayList<>();
     static String debtorDepositNumber;
     static String creditorDepositNumberPrefix;
@@ -55,7 +57,7 @@ public class BalanceFileHandler {
         // FileWriter fileWriter = new FileWriter(PAYMENT_FILE_PATH, true);
         for (BalanceVO balanceVO : balanceVOs) {
             //  printWriter.println(paymentRecord.toString());
-            balanceOut.writeObject(balanceVO.toString());
+            balanceOut.writeObject(balanceVO);
         }
 
         //  printWriter.close();
@@ -75,7 +77,7 @@ public class BalanceFileHandler {
             throws IOException {
         String resultFinalBalance = "";
 
-        Path pathBalanceUpdate = Paths.get("B://BalanceUpdate.txt");
+        Path pathBalanceUpdate = Paths.get(Main.FILE_PATH_PREFIX + "BalanceUpdate.txt");
         Files.createFile(pathBalanceUpdate);
         writeBalanceRecordsToFile(balanceVOs);
         resultFinalBalance += debtorDepositNumber + "\t" + creditorDepositNumberPrefix + "\t" + depositBalances + "\n";

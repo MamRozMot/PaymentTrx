@@ -1,5 +1,6 @@
 package ir.dotin.files;
 
+import ir.dotin.Main;
 import ir.dotin.business.TransactionProcessor;
 
 import java.io.*;
@@ -9,7 +10,7 @@ import static ir.dotin.files.TransactionVO.creditorDepositNumber;
 import static ir.dotin.files.TransactionVO.debtorDepositNumber;
 
 public class TransactionFileHandler {
-    private static final String TRANSACTION_FILE_PATH = "B://Transactions.txt";
+    private static final String TRANSACTION_FILE_PATH = Main.FILE_PATH_PREFIX + "Transactions.txt";
 
     //createTransactionFile
     public static void createTransactionFile(List<TransactionVO> list) throws IOException, ClassNotFoundException {
