@@ -1,6 +1,7 @@
 package ir.dotin.business;
 
 import ir.dotin.exception.InadequateInitialBalanceException;
+import ir.dotin.exception.NoDepositFoundException;
 import ir.dotin.files.BalanceVO;
 import ir.dotin.files.PaymentVO;
 import ir.dotin.files.TransactionVO;
@@ -14,7 +15,6 @@ public class TransactionProcessor {
     public static List<TransactionVO> processPaymentRecords(List<BalanceVO> depositBalances, List<PaymentVO> paymentVOs) throws Exception {
         String debtorDepositNumber = getDebtorDepositNumber(paymentVOs);
         validateDebtorBalance(depositBalances, paymentVOs, debtorDepositNumber);
-
         List<TransactionVO> transactionVOs = new ArrayList<>();
         for (PaymentVO paymentVO : paymentVOs) {
             if (DepositType.CREDITOR.equals(paymentVO.getType())) {
@@ -24,21 +24,21 @@ public class TransactionProcessor {
         return transactionVOs;
     }
 
-    private static String getDebtorDepositNumber(List<PaymentVO> paymentVOs) throws Exception {
+    private static String getDebtorDepositNumber(List<PaymentVO> paymentVOs) throws NoDepositFoundException {
         for (PaymentVO paymentVO : paymentVOs) {
             if (DepositType.DEBTOR.equals(paymentVO.getType())) {
                 return paymentVO.getDepositNumber();
             }
         }
-        throw new Exception("Debtor deposit not found!");
+        throw new NoDepositFoundException("Debtor deposit not found!");
     }
 
-    private static void validateDebtorBalance(List<BalanceVO> depositBalances, List<PaymentVO> paymentVOs, String debtorDepositNumber) throws Exception {
+    private static void validateDebtorBalance(List<BalanceVO> depositBalances, List<PaymentVO> paymentVOs, String debtorDepositNumber) throws NoDepositFoundException, InadequateInitialBalanceException {
         BigDecimal totalCreditorAmount = getCreditorAmountsSum(paymentVOs);
         BigDecimal debtorBalance = getBalance(depositBalances, debtorDepositNumber);
         if (debtorBalance == null)
-            throw new Exception("Debtor balance not found!");
-        if (totalCreditorAmount.compareTo(debtorBalance) > 0)
+            throw new NoDepositFoundException("Debtor balance not found!");
+        if (totalCreditorAmount.compareTo(debtorBalance) == 1)
             throw new InadequateInitialBalanceException("Not enough balance!");
     }
 
@@ -52,12 +52,12 @@ public class TransactionProcessor {
         return totalCreditorAmount;
     }
 
-    private static BigDecimal getBalance(List<BalanceVO> depositBalances, String depositNumber) {
+    private static BigDecimal getBalance(List<BalanceVO> depositBalances, String depositNumber) throws InadequateInitialBalanceException {
         for (BalanceVO balanceVO : depositBalances) {
             if (balanceVO.getDepositNumber().equals(depositNumber))
                 return balanceVO.getAmount();
         }
-        return null;
+        throw new InadequateInitialBalanceException("Not enough balance!");
     }
 
     private static TransactionVO processPayment(List<BalanceVO> depositBalances, String debtorDepositNumber, PaymentVO creditorPaymentVO) {

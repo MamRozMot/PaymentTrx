@@ -15,6 +15,7 @@ public class PaymentTransactionApp {
     public static final String BALANCE_FILE_PATH = FILE_PATH_PREFIX + "Balance.txt";
     public static final String PAYMENT_FILE_PATH = FILE_PATH_PREFIX + "Payment.txt";
     public static final String TRANSACTION_FILE_PATH = FILE_PATH_PREFIX + "Transactions.txt";
+    public static final String BALANCE_UPDATE_FILE_PATH = FILE_PATH_PREFIX + "BalanceUpdate.txt";
     public static final String DEBTOR_DEPOSIT_NUMBER = "1.10.100.1";
     public static final String CREDITOR_DEPOSIT_NUMBER_PREFIX = "1.20.100.";
 
@@ -32,8 +33,9 @@ public class PaymentTransactionApp {
             List<PaymentVO> paymentVOs = PaymentFileHandler.createPaymentFile(DEBTOR_DEPOSIT_NUMBER, CREDITOR_DEPOSIT_NUMBER_PREFIX, CREDITOR_COUNT);
             List<BalanceVO> depositBalances = BalanceFileHandler.createInitialBalanceFile(balanceVOs);
             List<TransactionVO> transactionVOS = TransactionProcessor.processPaymentRecords(depositBalances, paymentVOs);
-            TransactionFileHandler.createTransactionFile(transactionVOS);
             BalanceFileHandler.createFinalBalanceFile(depositBalances);
+            TransactionFileHandler.createTransactionFile(transactionVOS, depositBalances);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
